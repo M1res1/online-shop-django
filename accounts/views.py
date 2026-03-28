@@ -9,15 +9,17 @@ from accounts.models import User
 def create_manager():
     """
     to execute once on startup:
-    this function will call in online_shop/urls.py
+    this function will call in online_shop/wsgi.py
     """
     if not User.objects.filter(email="manager@example.com").first():
-        user = User.objects.create_user(
-            "manager@example.com", 'shop manager' ,'managerpass1234'
-        )
-        # give this user manager role
-        user.is_manager = True
-        user.save()
+        try:
+            user = User.objects.create_user(
+                "manager@example.com", 'shop manager', 'managerpass1234'
+            )
+            user.is_manager = True
+            user.save()
+        except Exception:
+            pass  # another worker already created the manager, that's fine
 
 
 def manager_login(request):

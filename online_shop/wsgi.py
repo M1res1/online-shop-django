@@ -1,12 +1,13 @@
 import os
-
-from django.core.wsgi import get_wsgi_application
-
-from accounts.views import create_manager
+import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'online_shop.settings')
 
-# create user with 'manager' role
-create_manager()
+from django.core.wsgi import get_wsgi_application
 
+# Must be called before any app imports so Django apps are fully loaded
 application = get_wsgi_application()
+
+# Now safe to import and call app code
+from accounts.views import create_manager
+create_manager()

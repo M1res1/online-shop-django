@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+
+# Python cache
+__pycache__
+*.py[cod]
+*.pyo
+.pytest_cache
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Local SQLite database (use Docker volume instead)
+db.sqlite3
+
+# Uploaded media (use Docker volume instead)
+media/
+
+# Collected static (rebuilt inside container)
+staticfiles/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Docker files
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Nginx configs
+nginx/
+
+# Terraform
+terraform/
+
+# Monitoring
+monitoring/
+
+# IDE
+.vscode/
+.idea/
+*.swp
