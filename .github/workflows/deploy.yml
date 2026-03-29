@@ -1,0 +1,53 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Django checks
+        env:
+          SECRET_KEY: test-secret-key-for-ci
+          DEBUG: 1
+          ALLOWED_HOSTS: localhost
+          DJANGO_SETTINGS_MODULE: online_shop.settings
+          DB_PATH: /tmp/test_db.sqlite3
+        run: |
+          python manage.py check
+          python manage.py migrate --noinput
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/online-shop-django
+            git pull origin master
+            docker compose up --build -d
+            docker image prune -f
