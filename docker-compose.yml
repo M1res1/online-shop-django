@@ -2,7 +2,7 @@
 services:
 
   web:
-    build: .
+    image: ghcr.io/m1res1/online-shop-django:latest
     container_name: shop_web
     restart: unless-stopped
     env_file: .env
