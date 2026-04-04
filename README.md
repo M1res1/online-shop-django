@@ -77,3 +77,40 @@ Feel free to explore, contribute, and customize this according to your needs!
 
 ## App Preview
 ![Peek 2022-01-09 19-15](https://user-images.githubusercontent.com/71011395/148689722-6ceacc8f-81b7-48e0-a258-9d4e543d1e7c.gif)
+
+
+⚙️ DevOps Implementation
+This project was used as a base to practice and demonstrate real-world DevOps practices. The application is fully containerized and deployed on DigitalOcean with automated CI/CD, monitoring, and SSL.
+Live URL: https://mirsaidbek-shop.ddns.net
+DevOps Stack
+ToolPurposeDocker + Docker ComposeContainerization of Django, Gunicorn, NginxTerraformInfrastructure as Code — provisions DigitalOcean Droplet and FirewallGitHub ActionsCI/CD pipeline — test, build, deploy on every pushGitHub Container RegistryDocker image storage (ghcr.io)NginxReverse proxy, static/media file servingLet's EncryptFree SSL certificate via CertbotPrometheus + Node ExporterMetrics collectionGrafanaMonitoring dashboardsDigitalOceanCloud provider (Ubuntu 22.04, Frankfurt)
+CI/CD Pipeline
+Every push to master automatically triggers 3 stages:
+Test  →  Build  →  Deploy
+
+Test — runs python manage.py check to verify Django configuration
+Build — builds Docker image and pushes to GitHub Container Registry
+Deploy — SSHes into the server, pulls the latest image and restarts containers
+
+How to Run with Docker
+bash# 1. Clone the repo
+git clone https://github.com/M1res1/online-shop-django.git
+cd online-shop-django
+
+# 2. Create environment file
+cp .env.example .env
+# Edit .env and set your SECRET_KEY
+
+# 3. Build and run
+docker compose up --build
+
+# 4. Visit
+http://localhost
+Infrastructure (Terraform)
+bashcd terraform
+terraform init
+terraform plan
+terraform apply
+Creates a DigitalOcean Droplet (1 vCPU, 2GB RAM) with a configured firewall.
+Monitoring
+Grafana is available at http://YOUR_SERVER_IP:3000 using the Node Exporter Full dashboard (ID: 1860) which shows CPU, memory, disk and network metrics in real time.
