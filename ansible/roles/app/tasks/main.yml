@@ -1,0 +1,56 @@
+---
+- name: Clone the repository
+  git:
+    repo: "https://github.com/M1res1/online-shop-django.git"
+    dest: /root/online-shop-django
+    version: master
+    force: true
+
+- name: Create .env file from template
+  template:
+    src: env.j2
+    dest: /root/online-shop-django/.env
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Create monitoring directory
+  file:
+    path: /root/online-shop-django/monitoring
+    state: directory
+    mode: "0755"
+
+- name: Create grafana.ini from template
+  template:
+    src: grafana.ini.j2
+    dest: /root/online-shop-django/monitoring/grafana.ini
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Log in to GitHub Container Registry
+  shell: echo "{{ github_token }}" | docker login ghcr.io -u {{ github_username }} --password-stdin
+
+- name: Pull Docker images
+  command: docker compose pull
+  args:
+    chdir: /root/online-shop-django
+
+- name: Start all containers
+  command: docker compose up -d --remove-orphans
+  args:
+    chdir: /root/online-shop-django
+
+- name: Clean up unused Docker images
+  command: docker image prune -f
+
+- name: Verify containers are running
+  command: docker compose ps
+  args:
+    chdir: /root/online-shop-django
+  register: compose_status
+  changed_when: false
+
+- name: Print container status
+  debug:
+    msg: "{{ compose_status.stdout }}"

@@ -1,0 +1,14 @@
+---
+- name: Deploy Online Shop
+  hosts: webservers
+  become: true
+
+  vars_files:
+    - vars/secrets.yml
+
+  roles:
+    - role: docker
+      tags: docker
+
+    - role: app
+      tags: app
